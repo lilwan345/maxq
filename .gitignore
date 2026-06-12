@@ -1,0 +1,7 @@
+# likeness photos are demo-only — never distributed; the app falls back to
+# a procedural cartoon Boss Cam automatically
+assets/boss/
+
+__pycache__/
+*.pyc
+.DS_Store
