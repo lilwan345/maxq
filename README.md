@@ -27,7 +27,7 @@ and I didn't notice for ten minutes" problem.*
 ## Install
 
 ```bash
-git clone <this repo> && cd maxq
+git clone https://github.com/lilwan345/maxq.git && cd maxq
 pip install PySide6          # pyobjc optional (over-fullscreen support)
 ./install_hooks.sh           # wires Claude Code hooks (backs up settings.json)
 ./run.sh
@@ -37,8 +37,9 @@ Requirements: macOS, Python 3.10+, [Claude Code](https://claude.com/claude-code)
 Restart your Claude Code sessions after installing the hooks.
 
 Menu-bar rocket icon → **Tour mode** (auto-cycles every state), Force state,
-Live. Drag to move (position persists). The threshold for the catch
-celebration is `WISP_DONE_MIN_SEC` (default 180s).
+Live. Drag to move (position persists). A task has to run at least
+`WISP_DONE_MIN_SEC` seconds (default 180, read by the hook) to end in the
+catch celebration.
 
 ## How it works
 
@@ -59,5 +60,10 @@ celebration is `WISP_DONE_MIN_SEC` (default 180s).
   used public-domain NASA/USAF photos, which are not distributed here.)
 - Fan art: this is an unaffiliated homage. No SpaceX marks or logos are
   used or implied.
+
+## Related
+
+[Beacon](https://github.com/lilwan345/beacon) reads the same session files
+and shows them as a calm lighthouse diorama instead of a launch stream.
 
 MIT — see LICENSE.
