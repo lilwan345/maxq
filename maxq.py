@@ -640,8 +640,8 @@ def update_anim(A: Anim, state: str, t: float, dt: float, st_t: float,
 #   assets/vehicle/tower.png    Mechazilla lattice (chopsticks stay
 #                               procedural ON TOP so the catch still animates)
 # Plume / smoke / shake stay procedural over the sprites so motion stays live.
-# (The Boss Cam is fully procedural — an animated cartoon, no assets. The
-# old photo experiment lives unused in assets/boss/, see ATTRIBUTION.md.)
+# (The Boss Cam is fully procedural — an animated cartoon, no assets.
+# load_assets() still accepts optional portraits in assets/boss/<state>.png.)
 SPRITES: dict = {}
 
 

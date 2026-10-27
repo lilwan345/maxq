@@ -1,69 +1,83 @@
-# MAX-Q 🚀
+# MAX-Q
 
-> Your AI coding agent, as a launch livestream.
+> Your AI coding agent, as a rocket-launch livestream.
 
-A tiny always-on-top mission-stream card for macOS that mirrors your
-**Claude Code** session state in real time — driven by real filesystem
-hooks, not animations on a timer:
+When Claude Code stops to ask for permission, it just waits. If you're in
+another window, you might not notice for ten minutes. MAX-Q is a small card
+that floats above your other windows on macOS and shows what your agent is
+doing as a launch broadcast, so you can tell at a glance when it needs you.
 
-| Your agent | On the stream |
+![The six MAX-Q states: ascent, hold, caught, anomaly, pad ready and standby](assets/states.png)
+
+## What each scene means
+
+| Your agent is... | The card shows |
 |---|---|
-| working | **ASCENT → STAGE SEP → ON ORBIT** — raptor plume, MAX-Q condensation collar, hot-stage separation at 66 KM / 5,800 KM/H, then an orbital coast with day/night laps, city lights and aurora (long tasks never look static) |
-| needs your permission | **HOLD** — giant amber hold, frozen T-10, pad strobes. It's waiting for *your* GO |
-| you answer the prompt | **GO GIVEN** — green countdown ticks T-10…1, pad vents breathe, then ignition |
-| task complete (≥3 min) | **THE CATCH** — the booster comes home and the tower's chopstick arms close around it. CAUGHT ✓ |
-| tool trouble | **RUD** — fireball, debris, the feed cuts to static |
-| everything quiet | night at the pad, red beacons, SCRUB CONFIRMED |
+| **working** | **Ascent.** The rocket lifts off and climbs. The longer the task runs, the higher it goes, until the sky turns to space. |
+| **waiting for your permission** | **Hold.** The countdown freezes at T-10 under a big amber HOLD: the launch is waiting for your "go". This is the one that matters. |
+| **back to work after you answer** | **Go given.** The countdown runs from 10 to 1, then the rocket lifts off. |
+| **done with a long task** (3+ minutes) | **The catch.** The booster flies home and the launch tower's arms catch it. CAUGHT ✓ |
+| **finished, nothing new yet** | **Pad ready.** The rocket sits on the pad at golden hour. |
+| **no session running** | **Standby.** Night at the pad, red lights blinking. |
 
-**Click the card** to jump to the terminal of the session that needs you —
-the asking one is exactly the prompt waiting for input. Live ALTITUDE /
-VELOCITY readouts, a FLT counter that ticks per completed task per day,
-camera-cut transitions, screen shake. It floats above fullscreen apps and
-is safe over light wallpapers by construction.
+There is also an **anomaly** scene (an explosion, then back to the pad). You
+see it in tour mode or by forcing it from the menu. Claude Code's hooks don't
+give a reliable "something went wrong" signal, so MAX-Q never shows it on its
+own; a false alarm would be worse than none.
 
-*Born as a desktop toy for the "my agent is waiting on a permission prompt
-and I didn't notice for ten minutes" problem.*
+**Click the card** to jump to the terminal of the session that needs you.
 
 ## Install
 
 ```bash
 git clone https://github.com/lilwan345/maxq.git && cd maxq
-pip install PySide6          # pyobjc optional (over-fullscreen support)
-./install_hooks.sh           # wires Claude Code hooks (backs up settings.json)
+pip install PySide6          # pyobjc is optional: it lets the card float over fullscreen apps
+./install_hooks.sh           # connects MAX-Q to Claude Code (backs up settings.json first)
 ./run.sh
 ```
 
 Requirements: macOS, Python 3.10+, [Claude Code](https://claude.com/claude-code).
 Restart your Claude Code sessions after installing the hooks.
 
-Menu-bar rocket icon → **Tour mode** (auto-cycles every state), Force state,
-Live. Drag to move (position persists). A task has to run at least
-`WISP_DONE_MIN_SEC` seconds (default 180, read by the hook) to end in the
-catch celebration.
+Use the **rocket icon in the menu bar** for tour mode (plays every scene in
+turn), forcing one scene, or going back to live. Drag the card to move it; it
+remembers where you put it. A task counts as "long" after 180 seconds; set
+`WISP_DONE_MIN_SEC` to change that.
 
 ## How it works
 
-- Claude Code hooks (`hooks/write_state.sh`) write one tiny JSON per
-  session to `~/.ai-desktop-toy/sessions/`; the card aggregates them by
-  priority (asking > working > done > idle). No API calls, no polling
-  your account, nothing leaves your machine.
-- All vehicle/tower/Earth art is **baked by `bake_vehicle.py`** — a pure
-  numpy/PIL pipeline (stainless shading, weld seams, heat-shield tiles,
-  fractal continents). No AI-generated images. Re-run it to restyle.
-- Flame, smoke, telemetry and transitions are procedural and live.
-- Click-to-focus: Terminal.app and iTerm2 jump to the exact tab;
-  VS Code raises the right window.
+1. **Claude Code hooks** (`hooks/write_state.sh`) run on events like "user sent
+   a prompt", "tool used", "needs permission" and "stopped", and each writes
+   one tiny JSON file per session to `~/.ai-desktop-toy/sessions/`.
+2. **The card** (`maxq.py`) reads those files twice a second. With several
+   sessions open it shows the most urgent one: waiting for you beats working,
+   which beats done and idle.
+3. **A false-alarm guard:** if the session's transcript was written *after*
+   the permission request, you already answered it, so the card stops showing
+   Hold.
+
+Nothing leaves your machine: no API calls and no network access.
+
+All the rocket, tower and Earth art is drawn by `bake_vehicle.py` with
+NumPy and Pillow (no AI-generated images). Flames, smoke and the telemetry
+numbers are drawn live each frame.
+
+## Files
+
+```
+maxq.py            the card: state detection, scenes, menu-bar icon
+hooks/             write_state.sh, the Claude Code hook
+install_hooks.sh   adds the hook to ~/.claude/settings.json
+bake_vehicle.py    draws the rocket, tower and Earth sprites into assets/vehicle/
+run.sh             launcher
+```
 
 ## Notes
 
-- **The Boss Cam** in this build is a procedural cartoon. (Demo videos
-  used public-domain NASA/USAF photos, which are not distributed here.)
-- Fan art: this is an unaffiliated homage. No SpaceX marks or logos are
-  used or implied.
+- A fan homage to rocket launch streams, not affiliated with any company. No
+  real logos are used. The "boss cam" in the corner is a drawn cartoon, not a
+  real person.
+- [Beacon](https://github.com/lilwan345/beacon) reads the same session files
+  and shows them as a calm lighthouse instead.
 
-## Related
-
-[Beacon](https://github.com/lilwan345/beacon) reads the same session files
-and shows them as a calm lighthouse diorama instead of a launch stream.
-
-MIT — see LICENSE.
+MIT, see [LICENSE](LICENSE).
